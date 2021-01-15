@@ -40,10 +40,12 @@ void solve() {
 	function<void(int)> dfs = [&](int cur) {
 		vis[cur]=1;
 		for(int nxt : G[cur]) {
+			if(cyc)
+				return;
 			if(vis[nxt]==1) {
 				cyc = true;
 				return;
-			} else {
+			} else if(vis[nxt]==0) {
 				dfs(nxt);
 			}
 		}
@@ -52,6 +54,8 @@ void solve() {
 	for(int i=0 ; i<n ; i++) {
 		if(!vis[i]) 
 			dfs(i);
+		if(cyc)
+			break;
 	}
 	if(cyc) {
 		cout << 2 << "\n";
