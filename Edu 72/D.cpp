@@ -24,7 +24,49 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	int n, m; cin >> n >> m;
+	vector<int> ans(m);
+	vector<vector<int>> G(n);
+	for(int i=0 ; i<m ; i++) {
+		int u, v; cin >> u >> v; u--, v--;
+		G[u].push_back(v);
+		if(u<v)
+			ans[i]=1;
+		else
+			ans[i]=2;
+	}
+	vector<int> vis(n);
+	bool cyc = false;
+	function<void(int)> dfs = [&](int cur) {
+		vis[cur]=1;
+		for(int nxt : G[cur]) {
+			if(vis[nxt]==1) {
+				cyc = true;
+				return;
+			} else {
+				dfs(nxt);
+			}
+		}
+		vis[cur]=2;
+	};
+	for(int i=0 ; i<n ; i++) {
+		if(!vis[i]) 
+			dfs(i);
+	}
+	if(cyc) {
+		cout << 2 << "\n";
+		for(auto x : ans) {
+			cout << x << " ";
+		}
+		cout << "\n";
+	}
+	else {
+		cout << 1 << "\n";
+		for(auto x : ans) {
+			cout << 1 << " ";
+		}
+		cout << "\n";
+	}
 }
 
 int main() {

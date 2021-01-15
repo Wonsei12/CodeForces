@@ -24,7 +24,13 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	ll s,i,exp; cin >> s >> i >> exp;
+	if(s+exp<=i) {
+		cout << 0 << "\n";
+		return;
+	} 
+	ll ANS = max(exp-max(0LL,(2-s+i+exp)/2)+1,0LL);
+	cout << ANS << "\n";
 }
 
 int main() {
