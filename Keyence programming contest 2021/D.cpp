@@ -23,17 +23,28 @@ using ll = long long;
 const ll MOD = 998244353LL;
 const long double PI = acos(-1.0);
 
+int popcount(int x) {
+	int cnt = 0;
+	while(x>0) {
+		if(x&1)
+			cnt += 1;
+		x/=2;
+	}
+	return cnt;
+}
+
 void solve() {
 	int n; cin >> n;
 	cout << (1<<n) - 1<< "\n";
 	int x=1<<(n-1) ;
-	for(int i=0 ; i<(1<<n)-1 ; i++) {
+	for(int i=1 ; i<=(1<<n)-1 ; i++) {
 		string s = "";
 		for(int j=0 ; j<(1<<n) ; j++) {
 			s+="A";
 		}
-		for(int j=0 ; j<x ; j++) {
-			s[(i+j)%(1<<n)]='B';
+		for(int j=0 ; j<(1<<n) ; j++) {
+			if(popcount(i&j)&1)
+				s[j]='B'; 
 		}
 		cout << s << "\n";
 	}
