@@ -23,26 +23,15 @@ using ll = long long;
 const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
-ll euclid(ll x, ll y, ll &k, ll &l) {
-	if (y == 0) {
-		k = 1;
-		l = 0;
-		return x;
-	}
-	ll g = euclid(y, x % y, l, k);
-	l -= k * (x / y);
-	return g;
-}
-
 void solve() {
-	ll k,l;
-	euclid(10,4,k,l);
-	cout << k <<" " << l << "\n";	
+	int n; cin >> n;
+	vector<ll> a(n);
+	
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t; cin >> t;
 	while(t--)
 		solve();
 }

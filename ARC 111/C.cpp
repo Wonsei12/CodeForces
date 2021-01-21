@@ -23,21 +23,40 @@ using ll = long long;
 const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
-ll euclid(ll x, ll y, ll &k, ll &l) {
-	if (y == 0) {
-		k = 1;
-		l = 0;
-		return x;
-	}
-	ll g = euclid(y, x % y, l, k);
-	l -= k * (x / y);
-	return g;
-}
-
 void solve() {
-	ll k,l;
-	euclid(10,4,k,l);
-	cout << k <<" " << l << "\n";	
+	int n; cin >> n;
+	vector<pii> a(n);
+	vector<int> b(n),pm(n),who(n);
+	for(int i=0 ; i<n ; i++) {
+		cin >> a[i].ff;
+		a[i].ss = i;
+	}
+	for(int i=0 ; i<n ; i++) 
+		cin >> b[i];
+	for(int i=0 ; i<n ; i++) {
+		cin >> pm[i]; pm[i] -= 1;
+		who[pm[i]]=i;
+		if(a[i].ff<=b[pm[i]] && pm[i]!=i) {
+			cout << -1 << "\n";
+			return;
+		}
+	}
+	sort(all(a));
+	vector<pii> ans;
+	for(int i=0 ; i<n ; i++) {
+		int cur = a[i].ss;
+		if(pm[cur]==cur)
+			continue;
+		int nxt = who[cur];
+		ans.push_back({cur,nxt});
+		swap(who[cur],who[pm[cur]]);
+		pm[nxt] = pm[cur];
+		pm[cur] = cur;
+	}
+	cout << sz(ans) << "\n";
+	for(auto x : ans) {
+		cout << x.ff+1 << " " << x.ss+1 << "\n"; 
+	}
 }
 
 int main() {

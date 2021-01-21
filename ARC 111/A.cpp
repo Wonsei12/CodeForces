@@ -20,24 +20,35 @@ using namespace std;
 
 using pii = pair<int, int>;
 using ll = long long;
-const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
-ll euclid(ll x, ll y, ll &k, ll &l) {
-	if (y == 0) {
-		k = 1;
-		l = 0;
-		return x;
-	}
-	ll g = euclid(y, x % y, l, k);
-	l -= k * (x / y);
-	return g;
+ll MOD;
+
+ll add(ll x, ll y) {
+	x+=y; x%=MOD;
+	return x;
+}
+ll sub(ll x, ll y) {
+	x-=y; x%=MOD; if(x<0) x+=MOD;
+	return x;
+}
+ll mult(ll x, ll y) {
+	return (x*y)%MOD;
+}
+ll bin_pow(ll x, ll p) {
+	if(p==0) return 1;
+	if(p&1) return mult(x,bin_pow(x,p-1));
+	return bin_pow(mult(x,x),p/2);
+}
+ll rev(ll x) {
+	return bin_pow(x,MOD-2);
 }
 
 void solve() {
-	ll k,l;
-	euclid(10,4,k,l);
-	cout << k <<" " << l << "\n";	
+	ll n, m; cin >> n >> m;
+	MOD = m*m;
+	ll cur = bin_pow(10,n);
+	cout << cur / m << "\n";
 }
 
 int main() {

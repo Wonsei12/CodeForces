@@ -23,26 +23,33 @@ using ll = long long;
 const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
-ll euclid(ll x, ll y, ll &k, ll &l) {
-	if (y == 0) {
-		k = 1;
-		l = 0;
-		return x;
+vector<bool> sieve(50000);
+vector<int> primes;
+void init() {
+	for(int i=2 ; i<=49999 ; i++) {
+		if(!sieve[i]) {
+			primes.push_back(i);
+			for(int j=i*2 ; j<=49999 ; j+=i) {
+				sieve[j] = 1;
+			}
+		}
 	}
-	ll g = euclid(y, x % y, l, k);
-	l -= k * (x / y);
-	return g;
 }
-
 void solve() {
-	ll k,l;
-	euclid(10,4,k,l);
-	cout << k <<" " << l << "\n";	
+	int d; cin >> d;
+	ll ans = 1;
+	int idx1 = lower_bound(primes.begin(),primes.end(),d+1) - primes.begin();
+	int firstPrime = primes[idx1];
+	int idx2 = lower_bound(primes.begin(),primes.end(),firstPrime + d) - primes.begin();
+	ans *= (ll)primes[idx1];
+	ans *= (ll)primes[idx2];
+	cout << ans << "\n"; 
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	init();
+	int t; cin >> t;
 	while(t--)
 		solve();
 }
