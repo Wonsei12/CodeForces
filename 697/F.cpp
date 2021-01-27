@@ -124,40 +124,65 @@ const long double PI = acos(-1.0);
 
 void solve() {
 	int n; cin >> n;
-	vector<ll> a(n+1);
-	for(int i=1 ; i<=n ; i++) {
+	vector<string> a(n), b(n);
+	for(int i=0 ; i<n ; i++) 
 		cin >> a[i];
-	}
-	vector<ll> pref(n+2),suf(n+2);
-	bool ok = true;
-	for(int i=1 ; i<n ; i++) {
-		pref[i] = a[i] - pref[i-1];
-		ok &= pref[i] >= 0;
-		if(!ok)
-			pref[i] = -1;
-	}
-	ok = true;
-	for(int i=n ; i>=2 ; i--) {
-		suf[i] = a[i] - suf[i+1]; 
-		ok &= suf[i] >= 0;
-		if(!ok)
-			suf[i] = -1;
-	}
-	//debug(pref,suf);
-	if(pref[n-1]==a[n]) {
+	for(int i=0 ; i<n ; i++)
+		cin >> b[i];
+	if(a == b) {
 		cout << "YES\n";
 		return;
 	}
-	for(int i=1 ; i<n ; i++) {
-		if(pref[i-1]==-1||suf[i+2]==-1)
-			continue;
-		if(a[i+1]-pref[i-1]==a[i]-suf[i+2]&&a[i+1]-pref[i-1]>=0) {
-			cout << "YES\n";
-			return;
+	auto invert_row = [&](int x) {
+		for(int i=0 ; i<n ; i++) {
+			a[x][i] = '0' + '1' - a[x][i];  
 		}
+	};
+	auto invert_column = [&](int x) {
+		for(int i=0 ; i<n ; i++) {
+			a[i][x] = '0' + '1' - a[i][x];
+		}
+	};
+	invert_row(0);
+	for(int i=0 ; i<n ; i++) {
+		if(a[0][i] == b[0][i]) continue;
+		invert_column(i);
+	}
+	for(int i=0 ; i<n ; i++) {
+		if(a[i][0] == b[i][0]) continue;
+		invert_row(i);
+	}
+	if(a==b)  {
+		cout << "YES\n";
+		return;
+	}
+	invert_column(0);
+	for(int i=0 ; i<n ; i++) {
+		if(a[i][0] == b[i][0]) continue;
+		invert_row(i);
+	}
+	for(int i=0 ; i<n ; i++) {
+		if(a[0][i] == b[0][i]) continue;
+		invert_column(i);
+	}
+	if(a==b) {
+		cout << "YES\n";
+		return;
+	}
+	invert_row(0);
+	for(int i=0 ; i<n ; i++) {
+		if(a[0][i] == b[0][i]) continue;
+		invert_column(i);
+	}
+	for(int i=0 ; i<n ; i++) {
+		if(a[i][0] == b[i][0]) continue;
+		invert_row(i);
+	}
+	if(a==b) {
+		cout << "YES\n";
+		return;
 	}
 	cout << "NO\n";
-	return;
 }
 
 int main() {

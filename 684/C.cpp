@@ -123,40 +123,100 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	int n; cin >> n;
-	vector<ll> a(n+1);
-	for(int i=1 ; i<=n ; i++) {
-		cin >> a[i];
+	int n, m; cin >> n >> m;
+	vector<string> s(n);
+	for(int i=0 ; i<n ; i++) {
+		cin >> s[i];
 	}
-	vector<ll> pref(n+2),suf(n+2);
-	bool ok = true;
-	for(int i=1 ; i<n ; i++) {
-		pref[i] = a[i] - pref[i-1];
-		ok &= pref[i] >= 0;
-		if(!ok)
-			pref[i] = -1;
-	}
-	ok = true;
-	for(int i=n ; i>=2 ; i--) {
-		suf[i] = a[i] - suf[i+1]; 
-		ok &= suf[i] >= 0;
-		if(!ok)
-			suf[i] = -1;
-	}
-	//debug(pref,suf);
-	if(pref[n-1]==a[n]) {
-		cout << "YES\n";
+	auto rvs = [&](int x, int y) {
+		s[x][y] = '0' + '1' - s[x][y];
 		return;
-	}
-	for(int i=1 ; i<n ; i++) {
-		if(pref[i-1]==-1||suf[i+2]==-1)
-			continue;
-		if(a[i+1]-pref[i-1]==a[i]-suf[i+2]&&a[i+1]-pref[i-1]>=0) {
-			cout << "YES\n";
-			return;
+	};
+	vector<pii> ans;
+	for(int i=0 ; i<n-2 ; i++) {
+		for(int j=0 ; j<m-1 ; j++) {
+			if(s[i][j]=='0'&&s[i][j+1]=='0') continue;
+			if(s[i][j]=='0'&&s[i][j+1]=='1') {
+				ans.push_back({i,j+1}); rvs(i,j+1);
+				ans.push_back({i+1,j}); rvs(i+1,j);
+				ans.push_back({i+1,j+1}); rvs(i+1,j+1);
+			} else if(s[i][j]=='1'&&s[i][j+1]=='0') {
+				ans.push_back({i,j}); rvs(i,j);
+				ans.push_back({i+1,j}); rvs(i+1,j);
+				ans.push_back({i+1,j+1}); rvs(i+1,j+1);
+			} else if(s[i][j]=='1'&&s[i][j+1]=='1') {
+				ans.push_back({i,j}); rvs(i,j);
+				ans.push_back({i,j+1}); rvs(i,j+1);
+				ans.push_back({i+1,j}); rvs(i+1,j);
+			}
 		}
 	}
-	cout << "NO\n";
+	for(int i=0 ; i<m-1 ; i++) {
+		if(s[n-2][i]=='0'&&s[n-1][i]=='0') continue;
+		else if(s[n-2][i]=='1'&&s[n-1][i]=='0') {
+			ans.push_back({n-2,i}); rvs(n-2,i);
+			ans.push_back({n-2,i+1}); rvs(n-2,i+1);
+			ans.push_back({n-1,i+1}); rvs(n-1,i+1);
+		} else if(s[n-2][i]=='0'&&s[n-1][i]=='1') {
+			ans.push_back({n-1,i}); rvs(n-1,i);
+			ans.push_back({n-2,i+1}); rvs(n-2,i+1);
+			ans.push_back({n-1,i+1}); rvs(n-1,i+1);
+		} else if(s[n-2][i]=='1'&&s[n-1][i]=='1') {
+			ans.push_back({n-2,i}); rvs(n-2,i); 
+			ans.push_back({n-1,i}); rvs(n-1,i);
+			ans.push_back({n-1,i+1}); rvs(n-1,i+1);
+		} 
+	}
+	int cnt = 0;
+	vector<pii> onbits,offbits;
+	for(int i=n-2 ; i<n ; i++) {
+		for(int j=m-2 ; j<m ; j++) {
+			cnt += (s[i][j] == '1');
+			if(s[i][j]=='1') onbits.push_back({i,j});
+			else offbits.push_back({i,j});
+		}
+	}
+	if(cnt==0) ;
+	else if(cnt==1) {
+		ans.push_back(onbits[0]);
+		ans.push_back(offbits[0]);
+		ans.push_back(offbits[1]);
+		ans.push_back(onbits[0]);
+		ans.push_back(offbits[1]);
+		ans.push_back(offbits[2]);
+		ans.push_back(onbits[0]);
+		ans.push_back(offbits[0]);
+		ans.push_back(offbits[2]);
+	} else if(cnt==2) {
+		ans.push_back(onbits[0]);
+		ans.push_back(offbits[0]);
+		ans.push_back(offbits[1]);
+		ans.push_back(offbits[0]);
+		ans.push_back(offbits[1]);
+		ans.push_back(onbits[1]);	
+	} else if(cnt==3) {
+		ans.push_back(onbits[0]);
+		ans.push_back(onbits[1]);
+		ans.push_back(onbits[2]);
+	} else {
+		ans.push_back(onbits[0]);
+		ans.push_back(onbits[1]);
+		ans.push_back(onbits[2]);
+		ans.push_back(onbits[1]);
+		ans.push_back(onbits[2]);
+		ans.push_back(onbits[3]);
+		ans.push_back(onbits[2]);
+		ans.push_back(onbits[3]);
+		ans.push_back(onbits[0]);
+		ans.push_back(onbits[0]);
+		ans.push_back(onbits[1]);
+		ans.push_back(onbits[3]);
+	}
+	cout << sz(ans)/3 << "\n";
+	for(int i=0 ; i<sz(ans) ; i++) {
+		cout << ans[i].ff + 1 << " " << ans[i].ss + 1 << " ";
+		if(i%3==2) cout << "\n"; 
+	}
 	return;
 }
 

@@ -29,7 +29,7 @@ void solve() {
 
 int main() {
 	IOS;
-	int t = 1;
+	int t; cin >> t;
 	while(t--)
 		solve();
 }

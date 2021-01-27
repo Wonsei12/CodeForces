@@ -24,7 +24,10 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	string s; cin >> s;
+	if(s[0]==s[1]&&s[1]==s[2]) cout << "Won\n";
+	else
+		cout << "Lost\n";
 }
 
 int main() {

@@ -124,45 +124,24 @@ const long double PI = acos(-1.0);
 
 void solve() {
 	int n; cin >> n;
-	vector<ll> a(n+1);
+	vector<vector<ll>> dp(n+1,vector<ll>(2));
+	dp[0][0] = dp[0][1] = 1;
 	for(int i=1 ; i<=n ; i++) {
-		cin >> a[i];
-	}
-	vector<ll> pref(n+2),suf(n+2);
-	bool ok = true;
-	for(int i=1 ; i<n ; i++) {
-		pref[i] = a[i] - pref[i-1];
-		ok &= pref[i] >= 0;
-		if(!ok)
-			pref[i] = -1;
-	}
-	ok = true;
-	for(int i=n ; i>=2 ; i--) {
-		suf[i] = a[i] - suf[i+1]; 
-		ok &= suf[i] >= 0;
-		if(!ok)
-			suf[i] = -1;
-	}
-	//debug(pref,suf);
-	if(pref[n-1]==a[n]) {
-		cout << "YES\n";
-		return;
-	}
-	for(int i=1 ; i<n ; i++) {
-		if(pref[i-1]==-1||suf[i+2]==-1)
-			continue;
-		if(a[i+1]-pref[i-1]==a[i]-suf[i+2]&&a[i+1]-pref[i-1]>=0) {
-			cout << "YES\n";
-			return;
+		string s; cin >> s;
+		if(s == "AND") {
+			dp[i][1] = dp[i-1][1];
+			dp[i][0] = 2 * dp[i-1][0] + dp[i-1][1];
+		} else {
+			dp[i][1] = 2 * dp[i-1][1] + dp[i-1][0];
+			dp[i][0] = dp[i-1][0];
 		}
 	}
-	cout << "NO\n";
-	return;
+	cout << dp[n][1] << "\n";
 }
 
 int main() {
 	IOS;
-	int t; cin >> t;
+	int t = 1;
 	while(t--)
 		solve();
 }

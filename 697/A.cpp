@@ -24,12 +24,19 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	ll n; cin >> n;
+	while(n%2 == 0)
+		n /= 2;
+	if(n == 1) {
+		cout << "NO\n";
+	} else {
+		cout << "YES\n";
+	}
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t; cin >> t;
 	while(t--)
 		solve();
 }

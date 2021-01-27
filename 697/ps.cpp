@@ -18,6 +18,11 @@ using namespace std;
 #define sz(x) (int)x.size()
 #define pw(x) (1LL<<x)
 
+using pii = pair<int, int>;
+using ll = long long;
+const ll MOD = 1e9 + 7;
+const long double PI = acos(-1.0);
+
 // Copied from Gennady-Korotkevich's template
 
 template <typename A, typename B>
@@ -117,47 +122,54 @@ void debug_out(Head H, Tail... T) {
 
 // End of Gennady-Korotkevich's template 
 
-using pii = pair<int, int>;
-using ll = long long;
-const ll MOD = 1e9 + 7;
-const long double PI = acos(-1.0);
-
 void solve() {
-	int n; cin >> n;
-	vector<ll> a(n+1);
+	int n; ll m; cin >> n >> m;
+	vector<ll> one, two; 
+
+	vector<int> a(n+1);
+	ll tot = 0;
 	for(int i=1 ; i<=n ; i++) {
 		cin >> a[i];
+		tot += a[i];
 	}
-	vector<ll> pref(n+2),suf(n+2);
-	bool ok = true;
-	for(int i=1 ; i<n ; i++) {
-		pref[i] = a[i] - pref[i-1];
-		ok &= pref[i] >= 0;
-		if(!ok)
-			pref[i] = -1;
-	}
-	ok = true;
-	for(int i=n ; i>=2 ; i--) {
-		suf[i] = a[i] - suf[i+1]; 
-		ok &= suf[i] >= 0;
-		if(!ok)
-			suf[i] = -1;
-	}
-	//debug(pref,suf);
-	if(pref[n-1]==a[n]) {
-		cout << "YES\n";
-		return;
-	}
-	for(int i=1 ; i<n ; i++) {
-		if(pref[i-1]==-1||suf[i+2]==-1)
-			continue;
-		if(a[i+1]-pref[i-1]==a[i]-suf[i+2]&&a[i+1]-pref[i-1]>=0) {
-			cout << "YES\n";
-			return;
+	
+	for(int i=1 ; i<=n ; i++) {
+		int x; cin >> x;
+		if(x==1) {
+			one.push_back(a[i]);
+		} else {
+			two.push_back(a[i]);
 		}
 	}
-	cout << "NO\n";
-	return;
+	if(tot < m) {
+		cout << -1 << "\n";
+		return;
+	}
+	sort(one.begin(),one.end());
+	sort(two.begin(),two.end());
+	one.push_back(0);
+	two.push_back(0);
+	reverse(all(one)); reverse(all(two));
+
+
+	for(int i=1 ; i<sz(one) ; i++) {
+		one[i] += one[i-1];
+	}
+	for(int i=1 ; i<sz(two) ; i++) {
+		two[i] += two[i-1];
+	}
+
+	int ans = INF;
+	for(int i=0 ; i<sz(one) ; i++) {
+		ll cur = one[i];
+		ll left = m - one[i];
+		int need = lower_bound(all(two), left) - two.begin();
+
+		if(need == sz(two))
+			continue;
+		ans = min(ans, i+need*2); 
+	}
+	cout << ans << "\n";
 }
 
 int main() {

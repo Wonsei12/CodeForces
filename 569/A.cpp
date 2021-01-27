@@ -24,7 +24,8 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	int n; cin >> n; 
+	cout << n * n + (n-1) * (n-1) << "\n";	
 }
 
 int main() {

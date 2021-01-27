@@ -24,12 +24,28 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	int n, m, k; cin >> n >> m >> k;
+	vector<pair<ll, ll>> ps(k);
+	vector<ll> cnta(n+1),cntb(m+1);
+	for(int i=0 ; i<k ; i++) {
+		cin >> ps[i].ff; 
+	}
+	for(int i=0 ; i<k ; i++) {
+		cin >> ps[i].ss;
+		ps[i].ff--; ps[i].ss--;
+		cnta[ps[i].ff]+=1;
+		cntb[ps[i].ss]+=1;
+	}
+	ll ans = 0;
+	for(int i=0 ; i<k ; i++) {
+		ans += (k - 1) - (cnta[ps[i].ff] - 1) - (cntb[ps[i].ss] - 1);
+	}
+	cout << ans / 2 << "\n";
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t; cin >> t;
 	while(t--)
 		solve();
 }

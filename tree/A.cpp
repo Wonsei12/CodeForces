@@ -24,12 +24,32 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	int n; cin >> n;
+	vector<vector<int>> G(n);
+	for(int i=0 ; i<n-1 ; i++) {
+		int u, v; cin >> u >> v; u--, v--;
+		G[u].push_back(v);
+		G[v].push_back(u);
+	}
+	int mx = -1, mxIdx = -1;
+	function<void(int, int, int)> dfs = [&](int cur, int dep, int par) {
+		if(mx < dep) {
+			mx = dep;
+			mxIdx = cur;
+		}
+		for(int nxt : G[cur]) {
+			if(nxt == par) continue;
+			dfs(nxt, dep+1, cur);
+		}
+	};
+	dfs(0, 0, -1);
+	dfs(mxIdx, 0, -1);
+	cout << mx * 3 << "\n"; 
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t; t = 1;
 	while(t--)
 		solve();
 }

@@ -24,7 +24,16 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	srand((unsigned int)time(NULL));
+	cout << 5000 << " " << 5000 << "\n";
+	for(int i=0 ; i<5000 ; i++) {
+		cout << rand() % 1073741823 + 1 << " \n"[i==4999];
+	}
+	for(int i=0 ; i<5000 ; i++) {
+		int x = rand() % 5000 + 1;
+		int y = rand() % 5000 + 1;
+		if(x > )
+	}
 }
 
 int main() {

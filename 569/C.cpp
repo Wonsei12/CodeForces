@@ -18,6 +18,11 @@ using namespace std;
 #define sz(x) (int)x.size()
 #define pw(x) (1LL<<x)
 
+using pii = pair<int, int>;
+using ll = long long;
+const ll MOD = 1e9 + 7;
+const long double PI = acos(-1.0);
+
 // Copied from Gennady-Korotkevich's template
 
 template <typename A, typename B>
@@ -117,52 +122,53 @@ void debug_out(Head H, Tail... T) {
 
 // End of Gennady-Korotkevich's template 
 
-using pii = pair<int, int>;
-using ll = long long;
-const ll MOD = 1e9 + 7;
-const long double PI = acos(-1.0);
-
 void solve() {
-	int n; cin >> n;
-	vector<ll> a(n+1);
-	for(int i=1 ; i<=n ; i++) {
+	int n, q; cin >> n >> q;
+	vector<int> a(n);
+	deque<int> dq;
+
+	int mx = -1, mxIdx = -1;
+	for(int i=0 ; i<n ; i++) {
 		cin >> a[i];
-	}
-	vector<ll> pref(n+2),suf(n+2);
-	bool ok = true;
-	for(int i=1 ; i<n ; i++) {
-		pref[i] = a[i] - pref[i-1];
-		ok &= pref[i] >= 0;
-		if(!ok)
-			pref[i] = -1;
-	}
-	ok = true;
-	for(int i=n ; i>=2 ; i--) {
-		suf[i] = a[i] - suf[i+1]; 
-		ok &= suf[i] >= 0;
-		if(!ok)
-			suf[i] = -1;
-	}
-	//debug(pref,suf);
-	if(pref[n-1]==a[n]) {
-		cout << "YES\n";
-		return;
-	}
-	for(int i=1 ; i<n ; i++) {
-		if(pref[i-1]==-1||suf[i+2]==-1)
-			continue;
-		if(a[i+1]-pref[i-1]==a[i]-suf[i+2]&&a[i+1]-pref[i-1]>=0) {
-			cout << "YES\n";
-			return;
+		dq.push_back(a[i]);
+		if(mx < a[i]) {
+			mx = a[i];
+			mxIdx = i;
 		}
 	}
-	cout << "NO\n";
-	return;
+	assert(mxIdx != -1);
+	// mxIdx번째 시행부터 앞이 고정되기 시작
+	vector<pii> ans(n + 1);
+
+	for(int i=1 ; i<=mxIdx ; i++) {
+		int f1 = dq.front(); dq.pop_front();
+		int f2 = dq.front(); dq.pop_front();
+		ans[i] = {f1,f2};
+		int m1 = max(f1, f2), m2 = min(f1, f2);
+		dq.push_back(m2);
+		dq.push_front(m1);
+	}
+	dq.pop_front();
+	vector<int> zz;
+	while(sz(dq)) {
+		int z = dq.front(); dq.pop_front();
+		zz.push_back(z);
+	}
+	while(q--) {
+		ll x; cin >> x;
+		if(x <= mxIdx) {
+			cout << ans[x].ff << " " << ans[x].ss << "\n";
+		} else {
+			x -= mxIdx + 1;
+			x %= n - 1;
+			cout << mx << " " << zz[x] << "\n";
+		}
+ 	}
 }
 
 int main() {
 	IOS;
-	int t; cin >> t;
+	int t; t = 1;
 	while(t--)
 		solve();
 }

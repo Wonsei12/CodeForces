@@ -24,12 +24,19 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	
+	int n; cin >> n;
+	int mx = n / 2020;
+	int nam = n % 2020;
+	if(mx >= nam) {
+		cout << "YES\n";
+	} else {
+		cout << "NO\n";
+	}
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t; cin >> t;
 	while(t--)
 		solve();
 }
