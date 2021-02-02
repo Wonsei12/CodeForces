@@ -1,5 +1,12 @@
+#define LOCAL
+
 #include <bits/stdc++.h>
 using namespace std;
+
+#pragma GCC optimize("O3")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC target("avx,avx2")
 
 #define IOS ios::sync_with_stdio(false);cin.tie(0)
 #define all(x) x.begin(), x.end()
@@ -17,8 +24,6 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 // Copied from Gennady-Korotkevich's template
-
-#define LOCAL
 
 template <typename A, typename B>
 string to_string(pair<A, B> p);
@@ -118,80 +123,65 @@ void debug_out(Head H, Tail... T) {
 // End of Gennady-Korotkevich's template 
 
 void solve() {
-	int n, m; cin >> n >> m;
-	vector<vector<pii>> G(n);
+	int n, m, k; cin >> n >> m >> k;
+	vector<pii> edge(m);
+	vector<int> deg(n);
+	vector<set<int>> G(n);
 	for(int i=0 ; i<m ; i++) {
-		int u, v, w; cin >> u >> v >> w; u--, v--;
-		G[u].push_back({v,w});
-		G[v].push_back({u,w});
+		cin >> edge[i].ff >> edge[i].ss;
+		edge[i].ff--; edge[i].ss--;
+		deg[edge[i].ff] += 1;
+		deg[edge[i].ss] += 1;
+		G[edge[i].ff].insert(edge[i].ss);
+		G[edge[i].ss].insert(edge[i].ff);
 	}
-	vector<vector<int>> par(n, vector<int>(21));
-	vector<vector<int>> mxEdge(n, vector<int>(21));
-	vector<int> dep(n);
-	function<void(int, int, int)> dfs = [&](int v, int d, int p) {
-		par[v][0] = p;
-		dep[v] = d;
-		for(pii nxt : G[v]) {
-			if(nxt.ff == p) continue;
-			dfs(nxt.ff, d+1, v);
-			mxEdge[nxt.ff][0] = nxt.ss;
-		}
-	};
-	dfs(0,0,0);
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			par[v][x] = par[par[v][x-1]][x-1];
+	vector<bool> fuck(n);
+	int tot = n;
+	queue<int> q;
+	for(int i=0 ; i<n ; i++) {
+		if(deg[i] < k) {
+			q.push(i);
+			fuck[i] = true;
+			tot-=1;
 		}
 	}
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			mxEdge[v][x] = min(mxEdge[v][x-1], mxEdge[par[v][x-1]][x-1]);
-		}
-	}
-	function<int(int, int)> LCA = [&](int x, int y) {
-		if(dep[x] > dep[y]) 
-			swap(x,y);
-		for(int i=20 ; i>=0 ; i--) {
-			if(dep[y]-dep[x] >= pw(i))
-				y = par[y][i];
-		}
-		if(x==y)
-			return x;
-		for(int i=20 ; i>=0 ; i--) {
-			if(par[x][i] != par[y][i]) {
-				x = par[x][i];
-				y = par[y][i];
+	set<pii> fucked;
+	vector<int> ans;
+	for(int i=m-1 ; i>=0 ; i--) {
+		while(!q.empty())  {
+			int cur = q.front(); q.pop();
+			for(int nxt : G[cur]) {
+				if(fucked.count({cur,nxt})) continue;
+				deg[nxt]--;
+				if(deg[nxt] < k && !fuck[nxt]) {
+					fuck[nxt] = true;
+					q.push(nxt);
+					tot-=1;
+				}
 			}
 		}
-		return par[x][0];
-	};
-	int q; cin >> q;
-	while(q--) {
-		int u, v; cin >> u >> v; u--, v--;
-		int lca = LCA(u, v);
-		int mx1 = INF, mx2 = INF;
-		int idx = 0;
-		int dis1 = dep[u] - dep[lca];
-		int dis2 = dep[v] - dep[lca];
-		while(dis1 > 0) {
-			if(dis1 & 1) {
-				mx1 = min(mx1, mxEdge[u][idx]);
-				u = par[u][idx];
+		ans.push_back(tot);
+		int fi=edge[i].ff, se=edge[i].ss;
+		if(!fuck[fi]&&!fuck[se]) {
+			deg[fi]-=1;
+			deg[se]-=1;
+			if(deg[fi] < k) {
+				fuck[fi] = true;
+				q.push(fi);
+				tot-=1;
 			}
-			idx += 1;
-			dis1 /= 2;
+			if(deg[se] < k) {
+				fuck[se] = true;
+				q.push(se);
+				tot-=1;
+			} 
 		}
-		idx = 0;
-		while(dis2 > 0) {
-			if(dis2 & 1) {
-				mx2 = min(mx2, mxEdge[v][idx]);
-				v = par[v][idx];
-			}
-			idx += 1;
-			dis2 /= 2;
-		}
-		cout << min(mx1, mx2) << "\n";
+		fucked.insert({fi,se});
+		fucked.insert({se,fi});
 	}
+	reverse(all(ans));
+	for(auto x : ans)
+		cout << x << " ";
 }
 
 int main() {

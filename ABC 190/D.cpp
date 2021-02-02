@@ -17,28 +17,31 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	int n; cin >> n;
-	vector<vector<int>> G(n);
-	for(int i=0 ; i<n-1 ; i++) {
-		int u, v; cin >> u >> v; u--, v--;
-		G[u].push_back(v);
-		G[v].push_back(u);
-	}
-	vector<ll> val(n);
-	int q; cin >> q;
-	while(q--) {
-		int t, x, y; cin >> t >> x >> y;
-		if(t==1) {
-
-		} else {
-
+	int ans = 0;
+	ll n; cin >> n;
+	n *= 2LL;
+	for(ll i=1 ; i*i<=n ; i++) {
+		if(n%i) continue;
+		ll x = n / i;
+		x += 1;
+		x -= i;
+		if(x % 2 == 0) {
+			ans ++;
+		}
+		if(n/i==i) continue;
+		x = i;
+		x += 1;
+		x -= n/i;
+		if(x % 2 == 0) {
+			ans ++;
 		}
 	}
+	cout << ans << "\n";
 }
 
 int main() {
 	IOS;
-	int t = 1; cin >> t;
+	int t = 1; 
 	while(t--)
 		solve();
 }

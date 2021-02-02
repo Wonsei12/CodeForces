@@ -18,27 +18,37 @@ const long double PI = acos(-1.0);
 
 void solve() {
 	int n; cin >> n;
-	vector<vector<int>> G(n);
-	for(int i=0 ; i<n-1 ; i++) {
-		int u, v; cin >> u >> v; u--, v--;
-		G[u].push_back(v);
-		G[v].push_back(u);
-	}
-	vector<ll> val(n);
-	int q; cin >> q;
-	while(q--) {
-		int t, x, y; cin >> t >> x >> y;
-		if(t==1) {
-
-		} else {
-
+	string s; cin >> s;
+	vector<int> val(10);
+	for(int i=1 ; i<=9 ; i++)
+		cin >> val[i];
+	int sIdx = -1;
+	for(int i=0 ; i<sz(s) ; i++) {
+		if(s[i]-'0' < val[s[i]-'0']) {
+			sIdx = i;
+			break;
 		}
 	}
+	if(sIdx == -1) {
+		cout << s << "\n";
+		return;
+	}
+	int eIdx = n-1;
+	for(int i=sIdx ; i<sz(s) ; i++) {
+		if(s[i]-'0' > val[s[i]-'0']) {
+			eIdx = i - 1;
+			break;
+		}
+	}
+	for(int i=sIdx ; i<=eIdx ; i++) {
+		s[i] = '0' + val[s[i]-'0'];
+	}
+	cout << s << "\n";
 }
 
 int main() {
 	IOS;
-	int t = 1; cin >> t;
+	int t = 1; 
 	while(t--)
 		solve();
 }

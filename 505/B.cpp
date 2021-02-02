@@ -117,86 +117,48 @@ void debug_out(Head H, Tail... T) {
 
 // End of Gennady-Korotkevich's template 
 
+ll gcd(ll a, ll b) {
+	if(b==0) return a;
+	return gcd(b, a%b);
+}
+
+ll lcm(ll a, ll b) {
+	return (a / gcd(a,b)) * b;
+}
+
 void solve() {
-	int n, m; cin >> n >> m;
-	vector<vector<pii>> G(n);
-	for(int i=0 ; i<m ; i++) {
-		int u, v, w; cin >> u >> v >> w; u--, v--;
-		G[u].push_back({v,w});
-		G[v].push_back({u,w});
+	int n; cin >> n;
+	ll g = 0;
+	vector<ll> a;
+	for(int i=0 ; i<n ; i++) {
+		ll x, y; cin >> x >> y;
+		g = gcd(g,lcm(x,y));
+		a.push_back(x);
+		a.push_back(y);
+	}	
+	if(g==1) {
+		cout << -1 << "\n";
 	}
-	vector<vector<int>> par(n, vector<int>(21));
-	vector<vector<int>> mxEdge(n, vector<int>(21));
-	vector<int> dep(n);
-	function<void(int, int, int)> dfs = [&](int v, int d, int p) {
-		par[v][0] = p;
-		dep[v] = d;
-		for(pii nxt : G[v]) {
-			if(nxt.ff == p) continue;
-			dfs(nxt.ff, d+1, v);
-			mxEdge[nxt.ff][0] = nxt.ss;
-		}
-	};
-	dfs(0,0,0);
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			par[v][x] = par[par[v][x-1]][x-1];
-		}
-	}
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			mxEdge[v][x] = min(mxEdge[v][x-1], mxEdge[par[v][x-1]][x-1]);
-		}
-	}
-	function<int(int, int)> LCA = [&](int x, int y) {
-		if(dep[x] > dep[y]) 
-			swap(x,y);
-		for(int i=20 ; i>=0 ; i--) {
-			if(dep[y]-dep[x] >= pw(i))
-				y = par[y][i];
-		}
-		if(x==y)
-			return x;
-		for(int i=20 ; i>=0 ; i--) {
-			if(par[x][i] != par[y][i]) {
-				x = par[x][i];
-				y = par[y][i];
+	else {
+		for(int i=0 ; i<2*n ; i++) {
+			ll p = gcd(g, a[i]);
+			if(p > 1) {
+				g = p;
+				break;
 			}
 		}
-		return par[x][0];
-	};
-	int q; cin >> q;
-	while(q--) {
-		int u, v; cin >> u >> v; u--, v--;
-		int lca = LCA(u, v);
-		int mx1 = INF, mx2 = INF;
-		int idx = 0;
-		int dis1 = dep[u] - dep[lca];
-		int dis2 = dep[v] - dep[lca];
-		while(dis1 > 0) {
-			if(dis1 & 1) {
-				mx1 = min(mx1, mxEdge[u][idx]);
-				u = par[u][idx];
-			}
-			idx += 1;
-			dis1 /= 2;
+		for(int i=2 ; i<=1e7 ; i++) {
+			if(g%i) continue;
+			cout << i << "\n";
+			return;
 		}
-		idx = 0;
-		while(dis2 > 0) {
-			if(dis2 & 1) {
-				mx2 = min(mx2, mxEdge[v][idx]);
-				v = par[v][idx];
-			}
-			idx += 1;
-			dis2 /= 2;
-		}
-		cout << min(mx1, mx2) << "\n";
+		cout << g << "\n";
 	}
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t = 1; 
 	while(t--)
 		solve();
 }

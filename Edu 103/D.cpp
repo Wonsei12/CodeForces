@@ -117,86 +117,133 @@ void debug_out(Head H, Tail... T) {
 
 // End of Gennady-Korotkevich's template 
 
+vector<int> par0(300300), par1(300300);
+vector<int> deg0(300300), deg1(300300);
+
+int find(int x) {
+	if(par0[x]==x) return x;
+	return par0[x] = find(par0[x]);
+}
+
+void union_par(int u, int v) {
+	u = find(u);
+	v = find(v);
+	if(u==v) return;
+	if(u>v)swap(u,v);
+	deg0[u] += deg0[v];
+	par0[v] = u;
+}
+
+
+int find2(int x) {
+	if(par1[x]==x) return x;
+	return par1[x] = find2(par1[x]);
+}
+
+void union_par2(int u, int v) {
+	u = find2(u);
+	v = find2(v);
+	if(u==v) return;
+	if(u>v)swap(u,v);
+	deg1[u] += deg1[v];
+	par1[v] = u;
+}
+
 void solve() {
-	int n, m; cin >> n >> m;
-	vector<vector<pii>> G(n);
-	for(int i=0 ; i<m ; i++) {
-		int u, v, w; cin >> u >> v >> w; u--, v--;
-		G[u].push_back({v,w});
-		G[v].push_back({u,w});
+	int n; cin >> n;
+	string s; cin >> s;
+	vector<int> a(n);
+	for(int i=0 ; i<n ; i++) {
+		if(s[i]=='R' && i%2==0 || s[i]=='L' && i%2 == 1)
+			a[i] = 1;
+		else
+			a[i] = 0;
 	}
-	vector<vector<int>> par(n, vector<int>(21));
-	vector<vector<int>> mxEdge(n, vector<int>(21));
-	vector<int> dep(n);
-	function<void(int, int, int)> dfs = [&](int v, int d, int p) {
-		par[v][0] = p;
-		dep[v] = d;
-		for(pii nxt : G[v]) {
-			if(nxt.ff == p) continue;
-			dfs(nxt.ff, d+1, v);
-			mxEdge[nxt.ff][0] = nxt.ss;
+	for(int i=0 ; i<n+1 ; i++)
+		par0[i] = i, deg0[i] = 1, par1[i]=i,deg1[i]=1;
+	for(int i=0 ; i<n+1 ; i++) {
+		if(i==0) {
+			if(a[i]==0) union_par(0,1);
+			else union_par2(0,1);
 		}
-	};
-	dfs(0,0,0);
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			par[v][x] = par[par[v][x-1]][x-1];
+		else if(i==n) {
+			if(a[n-1]==0) union_par(n-1, n);
+			else union_par2(n-1,n);
 		}
-	}
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			mxEdge[v][x] = min(mxEdge[v][x-1], mxEdge[par[v][x-1]][x-1]);
-		}
-	}
-	function<int(int, int)> LCA = [&](int x, int y) {
-		if(dep[x] > dep[y]) 
-			swap(x,y);
-		for(int i=20 ; i>=0 ; i--) {
-			if(dep[y]-dep[x] >= pw(i))
-				y = par[y][i];
-		}
-		if(x==y)
-			return x;
-		for(int i=20 ; i>=0 ; i--) {
-			if(par[x][i] != par[y][i]) {
-				x = par[x][i];
-				y = par[y][i];
+		else {
+			if(a[i-1]==0) {
+				union_par(i-1,i);
+			} else {
+				union_par2(i-1,i);
+			} 
+			if(a[i]==0) {
+				union_par(i,i+1);
+			} else {
+				union_par2(i,i+1);
 			}
 		}
-		return par[x][0];
-	};
-	int q; cin >> q;
-	while(q--) {
-		int u, v; cin >> u >> v; u--, v--;
-		int lca = LCA(u, v);
-		int mx1 = INF, mx2 = INF;
-		int idx = 0;
-		int dis1 = dep[u] - dep[lca];
-		int dis2 = dep[v] - dep[lca];
-		while(dis1 > 0) {
-			if(dis1 & 1) {
-				mx1 = min(mx1, mxEdge[u][idx]);
-				u = par[u][idx];
-			}
-			idx += 1;
-			dis1 /= 2;
-		}
-		idx = 0;
-		while(dis2 > 0) {
-			if(dis2 & 1) {
-				mx2 = min(mx2, mxEdge[v][idx]);
-				v = par[v][idx];
-			}
-			idx += 1;
-			dis2 /= 2;
-		}
-		cout << min(mx1, mx2) << "\n";
 	}
+	for(int i=0 ; i<n+1 ; i++) {
+		if(i==0) {
+			if(s[0]=='L') {
+				cout << 1 << " ";
+			} else {
+				if(a[0]==0) {
+					int x = find(0);
+					cout << deg0[x] << " ";
+				} else {
+					int x = find2(0);
+					cout << deg1[x] << " ";
+				}
+			}
+		} else if(i==n) {
+			if(s[n-1]=='L') {
+				if(a[n-1]==0) {
+					int x = find(n-1);
+					cout << deg0[x] << " ";
+				} else {
+					int x = find2(n-1);
+					cout << deg1[x] << " ";
+				}
+			} else {
+				cout << 1 << " ";
+			}
+		} else {
+			if(s[i-1]=='R'&&s[i]=='L') {
+				cout << 1 << " ";
+			} else if(s[i-1]=='L'&&s[i]=='R') {
+				if(a[i-1]==0) {
+					int x = find(i-1);
+					cout << deg0[x] << " ";
+				} else {
+					int x = find2(i-1);
+					cout << deg1[x] << " ";
+				}
+			} else if(s[i-1]=='L') {
+				if(a[i-1]==0) {
+					int x = find(i-1);
+					cout << deg0[x] << " ";
+				} else {
+					int x = find2(i-1);
+					cout << deg1[x] << " ";
+				}
+			} else {
+				if(a[i]==0) {
+					int x = find(i);
+					cout << deg0[x] << " ";
+				} else {
+					int x = find2(i);
+					cout << deg1[x] << " ";
+				}
+			}
+		}
+	}
+	cout << "\n";
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t = 1; cin >> t;
 	while(t--)
 		solve();
 }

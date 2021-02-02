@@ -1,5 +1,12 @@
+#define LOCAL
+
 #include <bits/stdc++.h>
 using namespace std;
+
+#pragma GCC optimize("O3")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC target("avx,avx2")
 
 #define IOS ios::sync_with_stdio(false);cin.tie(0)
 #define all(x) x.begin(), x.end()
@@ -17,8 +24,6 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 // Copied from Gennady-Korotkevich's template
-
-#define LOCAL
 
 template <typename A, typename B>
 string to_string(pair<A, B> p);
@@ -118,80 +123,42 @@ void debug_out(Head H, Tail... T) {
 // End of Gennady-Korotkevich's template 
 
 void solve() {
-	int n, m; cin >> n >> m;
-	vector<vector<pii>> G(n);
-	for(int i=0 ; i<m ; i++) {
-		int u, v, w; cin >> u >> v >> w; u--, v--;
-		G[u].push_back({v,w});
-		G[v].push_back({u,w});
-	}
-	vector<vector<int>> par(n, vector<int>(21));
-	vector<vector<int>> mxEdge(n, vector<int>(21));
-	vector<int> dep(n);
-	function<void(int, int, int)> dfs = [&](int v, int d, int p) {
-		par[v][0] = p;
-		dep[v] = d;
-		for(pii nxt : G[v]) {
-			if(nxt.ff == p) continue;
-			dfs(nxt.ff, d+1, v);
-			mxEdge[nxt.ff][0] = nxt.ss;
-		}
-	};
-	dfs(0,0,0);
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			par[v][x] = par[par[v][x-1]][x-1];
-		}
-	}
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			mxEdge[v][x] = min(mxEdge[v][x-1], mxEdge[par[v][x-1]][x-1]);
-		}
-	}
-	function<int(int, int)> LCA = [&](int x, int y) {
-		if(dep[x] > dep[y]) 
-			swap(x,y);
-		for(int i=20 ; i>=0 ; i--) {
-			if(dep[y]-dep[x] >= pw(i))
-				y = par[y][i];
-		}
-		if(x==y)
-			return x;
-		for(int i=20 ; i>=0 ; i--) {
-			if(par[x][i] != par[y][i]) {
-				x = par[x][i];
-				y = par[y][i];
-			}
-		}
-		return par[x][0];
-	};
-	int q; cin >> q;
-	while(q--) {
+	int n; cin >> n;
+	vector<vector<int>> G(n);
+	vector<int> deg(n);
+	vector<set<int>> rG(n);
+	vector<int> seq(n);
+	for(int i=0 ; i<n-1 ; i++) {
 		int u, v; cin >> u >> v; u--, v--;
-		int lca = LCA(u, v);
-		int mx1 = INF, mx2 = INF;
-		int idx = 0;
-		int dis1 = dep[u] - dep[lca];
-		int dis2 = dep[v] - dep[lca];
-		while(dis1 > 0) {
-			if(dis1 & 1) {
-				mx1 = min(mx1, mxEdge[u][idx]);
-				u = par[u][idx];
-			}
-			idx += 1;
-			dis1 /= 2;
-		}
-		idx = 0;
-		while(dis2 > 0) {
-			if(dis2 & 1) {
-				mx2 = min(mx2, mxEdge[v][idx]);
-				v = par[v][idx];
-			}
-			idx += 1;
-			dis2 /= 2;
-		}
-		cout << min(mx1, mx2) << "\n";
+		G[u].push_back(v);
+		G[v].push_back(u);
 	}
+	for(int i=0 ; i<n ; i++) {
+		cin >> seq[i];
+		seq[i] -= 1;
+	}
+	if(seq[0]!=0) {
+		cout << "No\n";
+		return;
+	}
+	function<void(int, int)> dfs = [&](int v, int p) {
+		for(int nxt : G[v]) {
+			if(nxt == p) continue;
+			deg[v] += 1;
+			rG[v].insert(nxt);
+			dfs(nxt, v);
+		}
+	};
+	dfs(0,-1);
+	int idx1=0,idx2=1;
+	for( ; idx1<n ; idx1++) {
+		for(int nxt : rG[seq[idx1]]) {
+			if(rG[seq[idx1]].count(seq[idx2++])) continue;
+			cout << "No\n";
+			return;
+		}
+	}
+	cout << "Yes\n";
 }
 
 int main() {

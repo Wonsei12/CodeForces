@@ -17,23 +17,10 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	int n; cin >> n;
-	vector<vector<int>> G(n);
-	for(int i=0 ; i<n-1 ; i++) {
-		int u, v; cin >> u >> v; u--, v--;
-		G[u].push_back(v);
-		G[v].push_back(u);
-	}
-	vector<ll> val(n);
-	int q; cin >> q;
-	while(q--) {
-		int t, x, y; cin >> t >> x >> y;
-		if(t==1) {
-
-		} else {
-
-		}
-	}
+	ll n, k; cin >> n >> k;
+	ll mok = (n-1) / k;
+	k = k + mok * k;
+	cout << (n+k-1)/n << "\n";
 }
 
 int main() {

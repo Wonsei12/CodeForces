@@ -118,85 +118,97 @@ void debug_out(Head H, Tail... T) {
 // End of Gennady-Korotkevich's template 
 
 void solve() {
-	int n, m; cin >> n >> m;
-	vector<vector<pii>> G(n);
+	int n, m, h; cin >> n >> m >> h;
+	vector<int> times(n);
+	vector<vector<int>> G(n), rG(n);
+	vector<int> deg(n);
+	for(int i=0 ; i<n ; i++) {
+		cin >> times[i];
+	}	
 	for(int i=0 ; i<m ; i++) {
-		int u, v, w; cin >> u >> v >> w; u--, v--;
-		G[u].push_back({v,w});
-		G[v].push_back({u,w});
-	}
-	vector<vector<int>> par(n, vector<int>(21));
-	vector<vector<int>> mxEdge(n, vector<int>(21));
-	vector<int> dep(n);
-	function<void(int, int, int)> dfs = [&](int v, int d, int p) {
-		par[v][0] = p;
-		dep[v] = d;
-		for(pii nxt : G[v]) {
-			if(nxt.ff == p) continue;
-			dfs(nxt.ff, d+1, v);
-			mxEdge[nxt.ff][0] = nxt.ss;
-		}
-	};
-	dfs(0,0,0);
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			par[v][x] = par[par[v][x-1]][x-1];
-		}
-	}
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			mxEdge[v][x] = min(mxEdge[v][x-1], mxEdge[par[v][x-1]][x-1]);
-		}
-	}
-	function<int(int, int)> LCA = [&](int x, int y) {
-		if(dep[x] > dep[y]) 
-			swap(x,y);
-		for(int i=20 ; i>=0 ; i--) {
-			if(dep[y]-dep[x] >= pw(i))
-				y = par[y][i];
-		}
-		if(x==y)
-			return x;
-		for(int i=20 ; i>=0 ; i--) {
-			if(par[x][i] != par[y][i]) {
-				x = par[x][i];
-				y = par[y][i];
-			}
-		}
-		return par[x][0];
-	};
-	int q; cin >> q;
-	while(q--) {
 		int u, v; cin >> u >> v; u--, v--;
-		int lca = LCA(u, v);
-		int mx1 = INF, mx2 = INF;
-		int idx = 0;
-		int dis1 = dep[u] - dep[lca];
-		int dis2 = dep[v] - dep[lca];
-		while(dis1 > 0) {
-			if(dis1 & 1) {
-				mx1 = min(mx1, mxEdge[u][idx]);
-				u = par[u][idx];
-			}
-			idx += 1;
-			dis1 /= 2;
+		bool k1 = false, k2 = false;
+		if((times[u] + 1) % h == times[v]) {
+			G[u].push_back(v);
+			rG[v].push_back(u);
+			deg[u] += 1;
+		} 
+		if((times[v] + 1) % h == times[u]) {
+			G[v].push_back(u);
+			rG[u].push_back(v);
+			deg[v] += 1;
 		}
-		idx = 0;
-		while(dis2 > 0) {
-			if(dis2 & 1) {
-				mx2 = min(mx2, mxEdge[v][idx]);
-				v = par[v][idx];
-			}
-			idx += 1;
-			dis2 /= 2;
-		}
-		cout << min(mx1, mx2) << "\n";
 	}
+	vector<bool> vis(n);
+	stack<int> st;
+	function<void(int, int)> dfs = [&](int v, int p) {
+		vis[v] = 1;
+		for(int nxt : G[v]) {
+			if(nxt == p || vis[nxt])
+				continue;
+			dfs(nxt, v);
+		}
+		st.push(v);
+	};	
+
+	for(int i=0 ; i<n ; i++) {
+		if(vis[i])
+			continue;
+		dfs(i,-1);	
+	}
+
+	vis = vector<bool>(n);
+	vector<int> num(n);
+	vector<vector<int>> ans(n);	
+	int cnt = 0;
+
+	function<void(int, int)> dfs2 = [&](int v, int p) {
+		vis[v] = 1;
+		num[v] = cnt;
+		ans[cnt].push_back(v);
+		for(int nxt : rG[v]) {
+			if(nxt == p || vis[nxt])
+				continue;
+			dfs2(nxt, v);
+		}
+	};
+
+	for(int i=0 ; i<n ; i++) {
+		int cur = st.top(); st.pop();
+		if(vis[cur]) 
+			continue;
+		dfs2(cur, -1);
+		cnt ++;
+	}
+	int mn = INF, mnI = -1;
+	for(int i=0 ; i<n ; i++) {
+		if(sz(ans[i]) == 0) continue;
+		bool groupfail = false;
+		for(int x : ans[i]) {
+			bool fail = false;
+			for(int k : G[x]) {
+				if(num[k] == num[x]) continue;
+				fail = true; break;
+			}
+			groupfail |= fail;
+		}
+		if(!groupfail) {
+			if(mn > sz(ans[i])) {
+				mn = sz(ans[i]);
+				mnI = i;
+			}
+		}
+	}
+	cout << mn << "\n";
+	for(auto x : ans[mnI]) {
+		cout << x+1 << " ";
+	}
+	return;
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t = 1; 
 	while(t--)
 		solve();
 }

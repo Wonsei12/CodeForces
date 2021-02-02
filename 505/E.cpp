@@ -17,22 +17,16 @@ const ll MOD = 1e9 + 7;
 const long double PI = acos(-1.0);
 
 void solve() {
-	int n; cin >> n;
-	vector<vector<int>> G(n);
-	for(int i=0 ; i<n-1 ; i++) {
-		int u, v; cin >> u >> v; u--, v--;
-		G[u].push_back(v);
-		G[v].push_back(u);
-	}
-	vector<ll> val(n);
-	int q; cin >> q;
-	while(q--) {
-		int t, x, y; cin >> t >> x >> y;
-		if(t==1) {
-
-		} else {
-
-		}
+	int n, m; cin >> n >> m;
+	vector<pii> a(m), b(m);
+	for(int i=0 ; i<m ; i++) 
+		cin >> a[i].ff >> a[i].ss;
+	sort(a.begin(),a.end());
+	for(int i=0 ; i<m ; i++) 
+		cin >> b[i].ff >> b[i].ss;
+	sort(b.begin(),b.end());
+	for(int i=0 ; i<m ; i++) {
+		int tarX = i, tarY = 
 	}
 }
 

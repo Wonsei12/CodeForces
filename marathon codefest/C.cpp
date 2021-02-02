@@ -1,5 +1,12 @@
+#define LOCAL
+
 #include <bits/stdc++.h>
 using namespace std;
+
+#pragma GCC optimize("O3")
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize("unroll-loops")
+#pragma GCC target("avx,avx2")
 
 #define IOS ios::sync_with_stdio(false);cin.tie(0)
 #define all(x) x.begin(), x.end()
@@ -18,27 +25,24 @@ const long double PI = acos(-1.0);
 
 void solve() {
 	int n; cin >> n;
-	vector<vector<int>> G(n);
+	int ans = 0;
+	string a, b; cin >> a >> b;
 	for(int i=0 ; i<n-1 ; i++) {
-		int u, v; cin >> u >> v; u--, v--;
-		G[u].push_back(v);
-		G[v].push_back(u);
+		if(a[i]==b[i]) continue;
+		if(a[i]!=b[i]&&a[i+1]!=b[i+1]&&a[i]!=a[i+1]) {
+			ans += 1;
+			a[i]=b[i];
+			a[i+1]=b[i+1];
+		} else 
+			ans += 1;
 	}
-	vector<ll> val(n);
-	int q; cin >> q;
-	while(q--) {
-		int t, x, y; cin >> t >> x >> y;
-		if(t==1) {
-
-		} else {
-
-		}
-	}
+	if(a[n-1]!=b[n-1]) ans ++;
+	cout << ans << "\n";
 }
 
 int main() {
 	IOS;
-	int t = 1; cin >> t;
+	int t = 1; 
 	while(t--)
 		solve();
 }

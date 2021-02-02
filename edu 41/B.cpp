@@ -115,88 +115,35 @@ void debug_out(Head H, Tail... T) {
 #define debug(...) 42
 #endif
 
-// End of Gennady-Korotkevich's template 
+// End of Gennady-Korotkevich's template x
 
 void solve() {
 	int n, m; cin >> n >> m;
-	vector<vector<pii>> G(n);
-	for(int i=0 ; i<m ; i++) {
-		int u, v, w; cin >> u >> v >> w; u--, v--;
-		G[u].push_back({v,w});
-		G[v].push_back({u,w});
-	}
-	vector<vector<int>> par(n, vector<int>(21));
-	vector<vector<int>> mxEdge(n, vector<int>(21));
-	vector<int> dep(n);
-	function<void(int, int, int)> dfs = [&](int v, int d, int p) {
-		par[v][0] = p;
-		dep[v] = d;
-		for(pii nxt : G[v]) {
-			if(nxt.ff == p) continue;
-			dfs(nxt.ff, d+1, v);
-			mxEdge[nxt.ff][0] = nxt.ss;
-		}
-	};
-	dfs(0,0,0);
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			par[v][x] = par[par[v][x-1]][x-1];
-		}
-	}
-	for(int x=1 ; x<21 ; x++) {
-		for(int v=0 ; v<n ; v++) {
-			mxEdge[v][x] = min(mxEdge[v][x-1], mxEdge[par[v][x-1]][x-1]);
-		}
-	}
-	function<int(int, int)> LCA = [&](int x, int y) {
-		if(dep[x] > dep[y]) 
-			swap(x,y);
-		for(int i=20 ; i>=0 ; i--) {
-			if(dep[y]-dep[x] >= pw(i))
-				y = par[y][i];
-		}
-		if(x==y)
-			return x;
-		for(int i=20 ; i>=0 ; i--) {
-			if(par[x][i] != par[y][i]) {
-				x = par[x][i];
-				y = par[y][i];
-			}
-		}
-		return par[x][0];
-	};
-	int q; cin >> q;
-	while(q--) {
-		int u, v; cin >> u >> v; u--, v--;
-		int lca = LCA(u, v);
-		int mx1 = INF, mx2 = INF;
-		int idx = 0;
-		int dis1 = dep[u] - dep[lca];
-		int dis2 = dep[v] - dep[lca];
-		while(dis1 > 0) {
-			if(dis1 & 1) {
-				mx1 = min(mx1, mxEdge[u][idx]);
-				u = par[u][idx];
-			}
-			idx += 1;
-			dis1 /= 2;
-		}
-		idx = 0;
-		while(dis2 > 0) {
-			if(dis2 & 1) {
-				mx2 = min(mx2, mxEdge[v][idx]);
-				v = par[v][idx];
-			}
-			idx += 1;
-			dis2 /= 2;
-		}
-		cout << min(mx1, mx2) << "\n";
-	}
+	vector<ll> a(n+1);
+	for(int i=1 ; i<=n ; i++) cin >> a[i];
+	vector<ll> b(n+1);
+	for(int i=1 ; i<=n ; i++) cin >> b[i];
+	vector<ll> pref(n+1);
+	for(int i=1 ; i<=n ; i++)
+		pref[i] = pref[i-1] + a[i];
+	vector<ll> pref2(n+1);
+	for(int i=1 ; i<=n ; i++)
+		pref2[i] = pref2[i-1] + a[i] * b[i];
+	ll cur = pref2[n];
+	//(cur);
+	ll ans = cur;
+	//debug(pref, pref2);
+	for(int i=0 ; i+m<=n ; i++) {
+	//	debug((pref2[i+m] - pref2[i]));
+	//	debug((pref[i+m] - pref[i]));
+		ans = max(ans, cur - (pref2[i+m] - pref2[i]) + (pref[i+m] - pref[i]));
+	} 	
+	cout << ans << "\n";
 }
 
 int main() {
 	IOS;
-	int t = 1;
+	int t = 1; 
 	while(t--)
 		solve();
 }
